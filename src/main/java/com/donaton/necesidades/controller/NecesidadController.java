@@ -10,7 +10,7 @@ import java.util.List;
 @RequestMapping("/necesidades")
 @CrossOrigin("*")
 public class NecesidadController {
-
+    // endpoint necesidades funcionando
     private final NecesidadService service;
 
     public NecesidadController(NecesidadService service) {

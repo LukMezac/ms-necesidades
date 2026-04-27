@@ -2,6 +2,8 @@ package com.donaton.necesidades.controller;
 
 import com.donaton.necesidades.model.Necesidad;
 import com.donaton.necesidades.service.NecesidadService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,12 +12,9 @@ import java.util.List;
 @RequestMapping("/necesidades")
 @CrossOrigin("*")
 public class NecesidadController {
-    // endpoint necesidades funcionando
-    private final NecesidadService service;
 
-    public NecesidadController(NecesidadService service) {
-        this.service = service;
-    }
+    @Autowired
+    private NecesidadService service;
 
     @GetMapping
     public List<Necesidad> listar() {
@@ -25,5 +24,27 @@ public class NecesidadController {
     @PostMapping
     public Necesidad crear(@RequestBody Necesidad n) {
         return service.guardar(n);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Necesidad n) {
+        Necesidad actual = service.buscarPorId(id);
+
+        if (actual == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        actual.setUbicacion(n.getUbicacion());
+        actual.setDescripcion(n.getDescripcion());
+        actual.setPrioridad(n.getPrioridad());
+        actual.setEstado(n.getEstado());
+
+        return ResponseEntity.ok(service.guardar(actual));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        service.eliminar(id);
+        return ResponseEntity.ok().build();
     }
 }

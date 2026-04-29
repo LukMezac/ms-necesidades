@@ -22,4 +22,12 @@ public class NecesidadService {
     public Necesidad guardar(Necesidad n) {
         return repository.save(n);
     }
+
+    public Necesidad buscarPorId(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public void eliminar(Long id) {
+        repository.deleteById(id);
+    }
 }

@@ -1,28 +1,19 @@
 package com.donaton.necesidades.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data; // Asegúrate de tener esta importación
 
-@Getter
 @Entity
 @Table(name = "necesidades")
+@Data
 public class Necesidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
     private String ubicacion;
-    @Setter
     private String descripcion;
-    @Setter
     private String prioridad;
-    @Setter
     private String estado;
-
-    public Necesidad() {}
-
-
 }

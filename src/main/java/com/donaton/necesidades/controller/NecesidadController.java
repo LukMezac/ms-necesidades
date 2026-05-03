@@ -2,7 +2,6 @@ package com.donaton.necesidades.controller;
 
 import com.donaton.necesidades.model.Necesidad;
 import com.donaton.necesidades.service.NecesidadService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +12,11 @@ import java.util.List;
 @CrossOrigin("*")
 public class NecesidadController {
 
-    @Autowired
-    private NecesidadService service;
+    private final NecesidadService service;
+
+    public NecesidadController(NecesidadService service) {
+        this.service = service;
+    }
 
     @GetMapping
     public List<Necesidad> listar() {
@@ -27,24 +29,27 @@ public class NecesidadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Necesidad n) {
-        Necesidad actual = service.buscarPorId(id);
+    public ResponseEntity<Necesidad> actualizar(@PathVariable Long id, @RequestBody Necesidad n) {
+        Necesidad existente = service.buscarPorId(id);
 
-        if (actual == null) {
-            return ResponseEntity.notFound().build();
+        if (existente != null) {
+            // Esto fallará si no pusiste @Data en la clase Necesidad
+            n.setId(id);
+            return ResponseEntity.ok(service.guardar(n));
         }
 
-        actual.setUbicacion(n.getUbicacion());
-        actual.setDescripcion(n.getDescripcion());
-        actual.setPrioridad(n.getPrioridad());
-        actual.setEstado(n.getEstado());
-
-        return ResponseEntity.ok(service.guardar(actual));
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
-        service.eliminar(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        Necesidad existente = service.buscarPorId(id);
+
+        if (existente != null) {
+            service.eliminar(id);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }

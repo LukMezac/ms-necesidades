@@ -18,18 +18,17 @@ public class NecesidadController {
         this.service = service;
     }
 
+
     @GetMapping
     public List<Necesidad> listar() {
         return service.listar();
     }
 
-
     @PostMapping
     public Necesidad crear(@RequestBody Necesidad n) {
-        n.setEstado("Pendiente"); // 🔥 importante
+        n.setEstado("Pendiente"); // 🔥 estado controlado por backend
         return service.guardar(n);
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Necesidad n) {
@@ -44,13 +43,13 @@ public class NecesidadController {
         actual.setDescripcion(n.getDescripcion());
         actual.setPrioridad(n.getPrioridad());
         actual.setEstado(n.getEstado());
-
         return ResponseEntity.ok(service.guardar(actual));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         service.eliminar(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Eliminado correctamente");
     }
+
 }

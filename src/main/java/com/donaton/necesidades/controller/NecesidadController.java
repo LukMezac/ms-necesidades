@@ -28,6 +28,11 @@ public class NecesidadController {
         return service.guardar(n);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Necesidad> obtenerPorId(@PathVariable Long id) {
+        Necesidad n = service.buscarPorId(id);
+        return (n != null) ? ResponseEntity.ok(n) : ResponseEntity.notFound().build();
+    }
     @PutMapping("/{id}")
     public ResponseEntity<Necesidad> actualizar(@PathVariable Long id, @RequestBody Necesidad n) {
         Necesidad existente = service.buscarPorId(id);

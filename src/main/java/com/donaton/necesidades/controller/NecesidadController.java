@@ -27,6 +27,17 @@ public class NecesidadController {
     public Necesidad crear(@RequestBody Necesidad n) {
         return service.guardar(n);
     }
+    @PostMapping("/municipal")
+    public ResponseEntity<Necesidad> registrarNecesidadMunicipal(@RequestBody Necesidad n) {
+        // Marcamos explícitamente el origen como Municipalidad
+        n.setOrigenSolicitud("MUNICIPALIDAD");
+        // Establecemos el estado inicial "DOCUMENTADA" tal como pide el caso para procesos oficiales
+        n.setEstado("DOCUMENTADA");
+        // Aseguramos prioridad alta por defecto
+        n.setPrioridad("ALTA");
+
+        return ResponseEntity.ok(service.guardar(n));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Necesidad> obtenerPorId(@PathVariable Long id) {

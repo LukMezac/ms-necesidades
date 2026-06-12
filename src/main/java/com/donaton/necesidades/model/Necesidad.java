@@ -1,7 +1,7 @@
 package com.donaton.necesidades.model;
 
 import jakarta.persistence.*;
-import lombok.Data; // Asegúrate de tener esta importación
+import lombok.Data;
 
 @Entity
 @Table(name = "necesidades")
@@ -16,4 +16,8 @@ public class Necesidad {
     private String descripcion;
     private String prioridad;
     private String estado;
+    // Identifica si es "CIUDADANO" o "MUNICIPALIDAD"
+    private String origenSolicitud;
+    // Identifica la municipalidad específica (ej: "Municipalidad de Viña del Mar")
+    private String entidadSolicitante;
 }

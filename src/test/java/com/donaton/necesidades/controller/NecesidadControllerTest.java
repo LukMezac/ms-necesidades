@@ -35,18 +35,19 @@ class NecesidadControllerTest {
 
     @Test
     void listarRetorna200() throws Exception {
-        Necesidad n = necesidad(1L, "Bogota", "Agua", "ALTA", "PENDIENTE");
+        Necesidad n = necesidad(1L, "Bogota", "Agua", 100, "ALTA", "PENDIENTE", "CIUDADANO", "N/A");
         when(necesidadService.listar()).thenReturn(List.of(n));
 
         mockMvc.perform(get("/necesidades"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].descripcion").value("Agua"));
+                .andExpect(jsonPath("$[0].descripcion").value("Agua"))
+                .andExpect(jsonPath("$[0].cantidad").value(100)); // Validamos cantidad
     }
 
     @Test
     void obtenerPorIdRetorna200() throws Exception {
-        when(necesidadService.buscarPorId(1L)).thenReturn(necesidad(1L, "Bogota", "Alimentos", "MEDIA", "PENDIENTE"));
+        when(necesidadService.buscarPorId(1L)).thenReturn(necesidad(1L, "Bogota", "Alimentos", 50, "MEDIA", "PENDIENTE", "MUNICIPALIDAD", "Muni Central"));
 
         mockMvc.perform(get("/necesidades/{id}", 1L))
                 .andExpect(status().isOk())
@@ -65,7 +66,7 @@ class NecesidadControllerTest {
     @Test
     void crearRetorna200() throws Exception {
         when(necesidadService.guardar(any(Necesidad.class)))
-                .thenReturn(necesidad(2L, "Cali", "Mantas", "BAJA", "PENDIENTE"));
+                .thenReturn(necesidad(2L, "Cali", "Mantas", 20, "BAJA", "PENDIENTE", "CIUDADANO", "N/A"));
 
         mockMvc.perform(post("/necesidades")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,20 +74,24 @@ class NecesidadControllerTest {
                                 {
                                   "ubicacion":"Cali",
                                   "descripcion":"Mantas",
+                                  "cantidad": 20,
                                   "prioridad":"BAJA",
-                                  "estado":"PENDIENTE"
+                                  "estado":"PENDIENTE",
+                                  "origenSolicitud":"CIUDADANO",
+                                  "entidadSolicitante":"N/A"
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
-                .andExpect(jsonPath("$.descripcion").value("Mantas"));
+                .andExpect(jsonPath("$.descripcion").value("Mantas"))
+                .andExpect(jsonPath("$.cantidad").value(20)); // Validamos que guarde la cantidad
     }
 
     @Test
     void actualizarRetorna200() throws Exception {
-        when(necesidadService.buscarPorId(3L)).thenReturn(necesidad(3L, "Medellin", "Comida", "ALTA", "PENDIENTE"));
+        when(necesidadService.buscarPorId(3L)).thenReturn(necesidad(3L, "Medellin", "Comida", 30, "ALTA", "PENDIENTE", "MUNICIPALIDAD", "Muni Norte"));
         when(necesidadService.guardar(any(Necesidad.class)))
-                .thenReturn(necesidad(3L, "Medellin", "Comida actualizada", "ALTA", "ATENDIDA"));
+                .thenReturn(necesidad(3L, "Medellin", "Comida actualizada", 50, "ALTA", "ATENDIDA", "MUNICIPALIDAD", "Muni Norte"));
 
         mockMvc.perform(put("/necesidades/{id}", 3L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,13 +99,17 @@ class NecesidadControllerTest {
                                 {
                                   "ubicacion":"Medellin",
                                   "descripcion":"Comida actualizada",
+                                  "cantidad": 50,
                                   "prioridad":"ALTA",
-                                  "estado":"ATENDIDA"
+                                  "estado":"ATENDIDA",
+                                  "origenSolicitud":"MUNICIPALIDAD",
+                                  "entidadSolicitante":"Muni Norte"
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(3))
-                .andExpect(jsonPath("$.estado").value("ATENDIDA"));
+                .andExpect(jsonPath("$.estado").value("ATENDIDA"))
+                .andExpect(jsonPath("$.cantidad").value(50));
     }
 
     @Test
@@ -113,8 +122,11 @@ class NecesidadControllerTest {
                                 {
                                   "ubicacion":"Medellin",
                                   "descripcion":"Comida",
+                                  "cantidad": 30,
                                   "prioridad":"ALTA",
-                                  "estado":"PENDIENTE"
+                                  "estado":"PENDIENTE",
+                                  "origenSolicitud":"MUNICIPALIDAD",
+                                  "entidadSolicitante":"Muni Norte"
                                 }
                                 """))
                 .andExpect(status().isNotFound());
@@ -122,7 +134,7 @@ class NecesidadControllerTest {
 
     @Test
     void eliminarRetorna200() throws Exception {
-        when(necesidadService.buscarPorId(5L)).thenReturn(necesidad(5L, "Barranquilla", "Agua", "MEDIA", "PENDIENTE"));
+        when(necesidadService.buscarPorId(5L)).thenReturn(necesidad(5L, "Barranquilla", "Agua", 10, "MEDIA", "PENDIENTE", "CIUDADANO", "N/A"));
         doNothing().when(necesidadService).eliminar(eq(5L));
 
         mockMvc.perform(delete("/necesidades/{id}", 5L))
@@ -136,14 +148,17 @@ class NecesidadControllerTest {
         mockMvc.perform(delete("/necesidades/{id}", 500L))
                 .andExpect(status().isNotFound());
     }
-
-    private Necesidad necesidad(Long id, String ubicacion, String descripcion, String prioridad, String estado) {
+    
+    private Necesidad necesidad(Long id, String ubicacion, String descripcion, Integer cantidad, String prioridad, String estado, String origenSolicitud, String entidadSolicitante) {
         Necesidad necesidad = new Necesidad();
         necesidad.setId(id);
         necesidad.setUbicacion(ubicacion);
         necesidad.setDescripcion(descripcion);
+        necesidad.setCantidad(cantidad); // <-- Agregado
         necesidad.setPrioridad(prioridad);
         necesidad.setEstado(estado);
+        necesidad.setOrigenSolicitud(origenSolicitud); // <-- Agregado
+        necesidad.setEntidadSolicitante(entidadSolicitante); // <-- Agregado
         return necesidad;
     }
 }

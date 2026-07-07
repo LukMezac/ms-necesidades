@@ -14,10 +14,9 @@ public class Necesidad {
 
     private String ubicacion;
     private String descripcion;
+    private Integer cantidad;
     private String prioridad;
     private String estado;
-    // Identifica si es "CIUDADANO" o "MUNICIPALIDAD"
     private String origenSolicitud;
-    // Identifica la municipalidad específica (ej: "Municipalidad de Viña del Mar")
     private String entidadSolicitante;
 }

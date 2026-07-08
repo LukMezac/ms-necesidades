@@ -148,7 +148,7 @@ class NecesidadControllerTest {
         mockMvc.perform(delete("/necesidades/{id}", 500L))
                 .andExpect(status().isNotFound());
     }
-    
+
     private Necesidad necesidad(Long id, String ubicacion, String descripcion, Integer cantidad, String prioridad, String estado, String origenSolicitud, String entidadSolicitante) {
         Necesidad necesidad = new Necesidad();
         necesidad.setId(id);
